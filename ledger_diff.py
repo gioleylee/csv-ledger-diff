@@ -16,6 +16,8 @@ def load(path, key):
             raise ValueError(f"{path}: missing key column {key!r}")
         rows = {}
         for values in reader:
+            if not values:
+                continue  # blank line, commonly left at the end of an export
             if len(values) != len(header):
                 raise ValueError(f"{path}:{reader.line_num}: wrong number of fields")
             row = dict(zip(header, values))

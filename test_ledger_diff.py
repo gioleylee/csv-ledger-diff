@@ -23,3 +23,10 @@ class LedgerDiffTests(TestCase):
             path.write_text("id,value\na,1\na,2\n", encoding="utf-8")
             with self.assertRaisesRegex(ValueError, "duplicate key"):
                 compare(path, path, "id")
+
+    def test_ignores_blank_lines(self):
+        with TemporaryDirectory() as directory:
+            before, after = (Path(directory) / name for name in ("old.csv", "new.csv"))
+            before.write_text("id,amount\n001,5\n\n002,8\n\n", encoding="utf-8")
+            after.write_text("id,amount\n001,5\n002,8\n", encoding="utf-8")
+            self.assertEqual(compare(before, after, "id"), {"added": [], "removed": [], "changed": {}})
